@@ -1,0 +1,44 @@
+@page "/players"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using BlazorTeamRegistrationApp.Models
+@using BlazorTeamRegistrationApp.Data
+@implements IAsyncDisposable
+@inject IDbContextFactory<BlazorTeamRegistrationApp.Data.BlazorTeamRegistrationContext> DbFactory
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="players/create">Create New</a>
+</p>
+
+<QuickGrid Class="table" Items="context.Player">
+    <PropertyColumn Property="player => player.FirstName" />
+    <PropertyColumn Property="player => player.LastName" />
+    <PropertyColumn Property="player => player.Height" />
+    <PropertyColumn Property="player => player.Weight" />
+    <PropertyColumn Property="player => player.GamesPlayed" />
+    <PropertyColumn Property="player => player.Goals" />
+    <PropertyColumn Property="player => player.Assists" />
+    <PropertyColumn Property="player => player.Points" />
+    <PropertyColumn Property="player => player.DoB" />
+
+    <TemplateColumn Context="player">
+        <a href="@($"players/edit?id={player.ID}")">Edit</a> |
+        <a href="@($"players/details?id={player.ID}")">Details</a> |
+        <a href="@($"players/delete?id={player.ID}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>
+
+@code {
+    private BlazorTeamRegistrationContext context = default!;
+
+    protected override void OnInitialized()
+    {
+        context = DbFactory.CreateDbContext();
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}

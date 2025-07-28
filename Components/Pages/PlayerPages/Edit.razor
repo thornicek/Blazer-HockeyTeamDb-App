@@ -1,0 +1,129 @@
+@page "/players/edit"
+@using Microsoft.EntityFrameworkCore
+@using BlazorTeamRegistrationApp.Models
+@inject IDbContextFactory<BlazorTeamRegistrationApp.Data.BlazorTeamRegistrationContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h2>Player</h2>
+<hr />
+@if (Player is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm method="post" Model="Player" OnValidSubmit="UpdatePlayer" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary role="alert"/>
+                <input type="hidden" name="Player.ID" value="@Player.ID" />
+                <div class="mb-3">
+                    <label for="firstname" class="form-label">FirstName:</label>
+                    <InputText id="firstname" @bind-Value="Player.FirstName" class="form-control" />
+                    <ValidationMessage For="() => Player.FirstName" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="lastname" class="form-label">LastName:</label>
+                    <InputText id="lastname" @bind-Value="Player.LastName" class="form-control" />
+                    <ValidationMessage For="() => Player.LastName" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="height" class="form-label">Height:</label>
+                    <InputNumber id="height" @bind-Value="Player.Height" class="form-control" />
+                    <ValidationMessage For="() => Player.Height" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="weight" class="form-label">Weight:</label>
+                    <InputNumber id="weight" @bind-Value="Player.Weight" class="form-control" />
+                    <ValidationMessage For="() => Player.Weight" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="gamesplayed" class="form-label">GamesPlayed:</label>
+                    <InputNumber id="gamesplayed" @bind-Value="Player.GamesPlayed" class="form-control" />
+                    <ValidationMessage For="() => Player.GamesPlayed" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="goals" class="form-label">Goals:</label>
+                    <InputNumber id="goals" @bind-Value="Player.Goals" class="form-control" />
+                    <ValidationMessage For="() => Player.Goals" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="assists" class="form-label">Assists:</label>
+                    <InputNumber id="assists" @bind-Value="Player.Assists" class="form-control" />
+                    <ValidationMessage For="() => Player.Assists" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="points" class="form-label">Points:</label>
+                    <InputNumber id="points" @bind-Value="Player.Points" class="form-control" />
+                    <ValidationMessage For="() => Player.Points" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="dob" class="form-label">DoB:</label>
+                    <InputDate id="dob" @bind-Value="Player.DoB" class="form-control" />
+                    <ValidationMessage For="() => Player.DoB" class="text-danger" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<div>
+    <a href="/players">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    private int ID { get; set; }
+
+    [SupplyParameterFromForm]
+    private Player? Player { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        Player ??= await context.Player.FirstOrDefaultAsync(m => m.ID == ID);
+
+        if (Player is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task UpdatePlayer()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Attach(Player!).State = EntityState.Modified;
+
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!PlayerExists(Player!.ID))
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        NavigationManager.NavigateTo("/players");
+    }
+
+    private bool PlayerExists(int id)
+    {
+        using var context = DbFactory.CreateDbContext();
+        return context.Player.Any(e => e.ID == id);
+    }
+}
