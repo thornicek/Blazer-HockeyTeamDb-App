@@ -16,12 +16,12 @@
             <DataAnnotationsValidator />
             <ValidationSummary class="text-danger" role="alert"/>
             <div class="mb-3">
-                <label for="firstname" class="form-label">FirstName:</label> 
+                <label for="firstname" class="form-label">First Name:</label> 
                 <InputText id="firstname" @bind-Value="Player.FirstName" class="form-control" /> 
                 <ValidationMessage For="() => Player.FirstName" class="text-danger" /> 
             </div>        
             <div class="mb-3">
-                <label for="lastname" class="form-label">LastName:</label> 
+                <label for="lastname" class="form-label">Last Name:</label> 
                 <InputText id="lastname" @bind-Value="Player.LastName" class="form-control" /> 
                 <ValidationMessage For="() => Player.LastName" class="text-danger" /> 
             </div>        
@@ -36,7 +36,7 @@
                 <ValidationMessage For="() => Player.Weight" class="text-danger" /> 
             </div>        
             <div class="mb-3">
-                <label for="gamesplayed" class="form-label">GamesPlayed:</label> 
+                <label for="gamesplayed" class="form-label">Games Played:</label> 
                 <InputNumber id="gamesplayed" @bind-Value="Player.GamesPlayed" class="form-control" /> 
                 <ValidationMessage For="() => Player.GamesPlayed" class="text-danger" /> 
             </div>        
