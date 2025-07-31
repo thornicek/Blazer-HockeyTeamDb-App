@@ -10,11 +10,18 @@
 
 <h1>Index</h1>
 
+<div>
+    <form action="/players" data-enhance data-permanent>
+        <input type="search" name="lastname" />
+        <input type="submit" value="Search" /> 
+    </form>
+</div>
+
 <p>
     <a href="players/create">Create New</a>
 </p>
 
-<QuickGrid Class="table" Items="context.Player">
+<QuickGrid Class="table" Items="FilteredPlayers">
     <PropertyColumn Property="player => player.FirstName" Title="First Name"/>
     <PropertyColumn Property="player => player.LastName" Title="Last Name" />
     <PropertyColumn Property="player => player.Height" />
@@ -41,4 +48,13 @@
     }
 
     public async ValueTask DisposeAsync() => await context.DisposeAsync();
+
+    
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "lastname")]
+    public string? LastNameFilter { get; set; }
+
+    private IQueryable<Player> FilteredPlayers =>
+    context.Player.Where(p => EF.Functions.Like(p.LastName!, $"%{LastNameFilter ?? ""}%"));
+
 }
